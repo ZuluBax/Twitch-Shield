@@ -49,6 +49,11 @@ Per-moderator permissions, each off by default and switched on by the owner for 
 
 Every settings change is audit-logged with who made it, the old value and the new value, so the owner can always see and undo a moderator's change. Only the owner can grant or remove these permissions.
 
+**Owner notification (decided 2026-11-12):** when a moderator switches on automatic mode, auto-timeout or auto-ban, the streamer is notified. The notification says who changed what and when, and has a one-click "Undo" that restores the previous settings.
+- Delivery for now is an in-app alert. It shows at the top of every page until the streamer dismisses it, and is kept in a notifications list.
+- No email: we deliberately don't request the `user:read:email` scope. Twitch whispers are possible later, but need an extra scope and a phone-verified sending account, and Twitch rate-limits them. That decision is deferred.
+- The change itself still takes effect immediately, because the streamer granted the permission. The notification exists so the streamer always knows about it.
+
 Technical consequences:
 - The data model has `User`, `Channel` and a `ChannelMember` table (user, channel, role, permissions, granted_by, granted_at). Every query checks membership, and every write checks the specific permission on the server, never only in the UI.
 - Before a grant succeeds, the system checks with Twitch that the person really is a moderator of that channel (Get Moderators, `moderation:read` scope on the streamer's token).
